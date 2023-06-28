@@ -1,11 +1,14 @@
 package br.com.dias.apiRest.service;
 
+import br.com.dias.apiRest.controller.PersonController;
 import br.com.dias.apiRest.data.dto.v1.PersonDTO;
 import br.com.dias.apiRest.exceptions.ResourceNotFoundException;
 import br.com.dias.apiRest.model.Person;
 import br.com.dias.apiRest.repository.PersonRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,36 +26,47 @@ public class PersonService {
     public PersonDTO findById(Long id) {
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
-        return modelMapper.map(person, PersonDTO.class);
+        var personDTO = modelMapper.map(person, PersonDTO.class);
+        personDTO.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+        return personDTO;
     }
 
     public List<PersonDTO> findAll() {
         List<Person> persons = personRepository.findAll();
-        return persons.stream()
+        var personsDTO =  persons.stream()
                 .map(person -> modelMapper.map(person, PersonDTO.class))
                 .collect(Collectors.toList());
+
+        personsDTO.stream().forEach(person -> person.add(linkTo(methodOn(PersonController.class)
+                .findById(person.getIdentity())).withSelfRel()));
+
+        return personsDTO;
     }
 
     public PersonDTO create(PersonDTO person) {
-        Person personEntity = modelMapper.map(person, Person.class);
-        Person savedPerson = personRepository.save(personEntity);
-        return modelMapper.map(savedPerson, PersonDTO.class);
-        // return modelMapper.map(personRepository.save(personEntity), PersonDTO.class);
+        var personEntity = modelMapper.map(person, Person.class);
+        var personDTO = modelMapper.map(personRepository.save(personEntity), PersonDTO.class);
+        personDTO.add(linkTo(methodOn(PersonController.class)
+                .findById(personDTO.getIdentity())).withSelfRel());
+        return personDTO;
     }
 
     public PersonDTO update(PersonDTO person) {
-        Person entity = personRepository.findById(person.getId())
+        var entity = personRepository.findById(person.getIdentity())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
         entity.setFirstName(person.getFirstName());
         entity.setLastName(person.getLastName());
         entity.setAddress(person.getAddress());
         entity.setGender(person.getGender());
-        personRepository.save(entity);
-        return modelMapper.map(entity, PersonDTO.class);
+
+        var personDTO = modelMapper.map(personRepository.save(entity), PersonDTO.class);
+        personDTO.add(linkTo(methodOn(PersonController.class)
+                .findById(personDTO.getIdentity())).withSelfRel());
+        return personDTO;
     }
 
     public void delete(Long id) {
-        Person person = personRepository.findById(id)
+        var person = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
         personRepository.delete(person);
     }
