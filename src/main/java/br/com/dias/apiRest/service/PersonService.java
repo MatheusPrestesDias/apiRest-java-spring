@@ -37,7 +37,7 @@ public class PersonService {
                 .map(person -> modelMapper.map(person, PersonDTO.class))
                 .collect(Collectors.toList());
 
-        personsDTO.stream().forEach(person -> person.add(linkTo(methodOn(PersonController.class)
+        personsDTO.forEach(person -> person.add(linkTo(methodOn(PersonController.class)
                 .findById(person.getIdentity())).withSelfRel()));
 
         return personsDTO;
