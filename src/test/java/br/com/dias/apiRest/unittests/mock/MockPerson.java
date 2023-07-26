@@ -2,7 +2,6 @@ package br.com.dias.apiRest.unittests.mock;
 
 import br.com.dias.apiRest.data.dto.v1.PersonDTO;
 import br.com.dias.apiRest.model.Person;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package br.com.dias.apiRest.model;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.Date;
 
