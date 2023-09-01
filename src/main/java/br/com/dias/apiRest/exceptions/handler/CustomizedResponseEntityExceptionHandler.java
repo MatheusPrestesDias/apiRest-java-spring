@@ -1,6 +1,7 @@
 package br.com.dias.apiRest.exceptions.handler;
 
 import br.com.dias.apiRest.exceptions.ExceptionResponse;
+import br.com.dias.apiRest.exceptions.InvalidJwtAuthenticationException;
 import br.com.dias.apiRest.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,15 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
                 ex.getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidJwtAuthenticationException.class)
+    public final ResponseEntity<ExceptionResponse> handleInvalidJwtAuthenticationException(Exception ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }
 
 }
