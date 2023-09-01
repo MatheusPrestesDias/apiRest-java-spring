@@ -1,11 +1,23 @@
 package br.com.dias.apiRest.data.dto.v1.security;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 public class AccountCredentialsDTO implements Serializable {
 
+    @NotBlank
+    @NotNull
     private String username;
+
+    @NotBlank
+    @NotNull
     private String password;
+
+    public AccountCredentialsDTO() {
+        // Construtor vazio
+    }
 
     public AccountCredentialsDTO(String username, String password) {
         this.username = username;
