@@ -16,7 +16,6 @@ public class AccountCredentialsDTO implements Serializable {
     private String password;
 
     public AccountCredentialsDTO() {
-        // Construtor vazio
     }
 
     public AccountCredentialsDTO(String username, String password) {

@@ -26,6 +26,16 @@ public class SecurityConfig {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+
+        Pbkdf2PasswordEncoder pbkdf2Encoder = new Pbkdf2PasswordEncoder("", 8, 185000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
+        encoders.put("pbkdf2", pbkdf2Encoder);
+        DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
+        passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
+        return passwordEncoder;
+    }
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -37,15 +47,16 @@ public class SecurityConfig {
         return  htpp
                 .httpBasic().disable()
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         authorizeHttpRequests -> authorizeHttpRequests
                                 .requestMatchers(
-                                        "/auth/signin",
+                                        "/auth/authenticate",
                                         "/auth/refresh/**",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**").permitAll()
-                                .requestMatchers("/api/v1/**").authenticated()
+                                .requestMatchers("/api/**").authenticated()
                                 .requestMatchers("/users").denyAll()
                 )
                 .cors()
@@ -55,16 +66,4 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-
-        Pbkdf2PasswordEncoder pbkdf2Encoder = new Pbkdf2PasswordEncoder(
-                "", 8, 185000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256
-        );
-        encoders.put("pbkdf2", pbkdf2Encoder);
-        DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
-        passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
-        return passwordEncoder;
-    }
 }
