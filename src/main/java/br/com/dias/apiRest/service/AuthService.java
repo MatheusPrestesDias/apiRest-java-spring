@@ -40,6 +40,17 @@ public class AuthService {
         }
     }
 
+    public TokenDTO refreshToken(String username, String refreshToken) {
+        var user = userRepository.findByUserName(username);
+
+        if (user != null) {
+            return jwtTokenProvider.refreshToken(refreshToken);
+        } else {
+            throw new UsernameNotFoundException("Username " + username + " not found!");
+        }
+
+    }
+
     private void authenticate(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
