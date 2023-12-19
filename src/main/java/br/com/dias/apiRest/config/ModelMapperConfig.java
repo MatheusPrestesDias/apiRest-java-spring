@@ -22,6 +22,9 @@ public class ModelMapperConfig {
         modelMapper.createTypeMap(Person.class, PersonDTO.class)
                 .addMapping(Person::getId, PersonDTO::setIdentity);
 
+        modelMapper.createTypeMap(PersonDTO.class, Person.class)
+                .addMapping(PersonDTO::getIdentity, Person::setId);
+
         modelMapper.createTypeMap(Book.class, BookDTO.class)
                 .addMapping(Book::getId, BookDTO::setIdentity);
 
