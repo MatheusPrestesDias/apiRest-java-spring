@@ -15,10 +15,16 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -33,17 +39,21 @@ class PersonServiceTest {
     @Mock
     private PersonRepository repository;
 
-    @Spy
+    @Mock
     private ModelMapper modelMapper;
 
     @BeforeEach
     void setupMocks() throws Exception {
         input = new MockPerson();
         MockitoAnnotations.openMocks(this);
+
+        modelMapper = new ModelMapper();
+
         modelMapper.createTypeMap(Person.class, PersonDTO.class)
                 .addMapping(Person::getId, PersonDTO::setIdentity);
         modelMapper.createTypeMap(PersonDTO.class, Person.class)
                 .addMapping(PersonDTO::getIdentity, Person::setId);
+
     }
 
     @Test
@@ -80,7 +90,7 @@ class PersonServiceTest {
 
         PersonDTO personDTO = input.mockDTO(1);
 
-        when(repository.save(entity)).thenReturn(entity);
+        when(repository.save(any(Person.class))).thenReturn(entity);
 
         var result = service.create(personDTO);
         assertNotNull(result);

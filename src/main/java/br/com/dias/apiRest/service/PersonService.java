@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +63,16 @@ public class PersonService {
         var personDTO = modelMapper.map(personRepository.save(entity), PersonDTO.class);
         personDTO.add(linkTo(methodOn(PersonController.class)
                 .findById(personDTO.getIdentity())).withSelfRel());
+        return personDTO;
+    }
+
+    @Transactional
+    public PersonDTO disablePerson(Long id) {
+        personRepository.disablePerson(id);
+        Person person = personRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
+        var personDTO = modelMapper.map(person, PersonDTO.class);
+        personDTO.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
         return personDTO;
     }
 

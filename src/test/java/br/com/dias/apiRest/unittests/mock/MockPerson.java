@@ -38,6 +38,7 @@ public class MockPerson {
         person.setGender(((number % 2)==0) ? "Male" : "Female");
         person.setId(number.longValue());
         person.setLastName("Last Name Test" + number);
+        person.setEnabled(true);
         return person;
     }
 
@@ -48,6 +49,7 @@ public class MockPerson {
         person.setGender(((number % 2)==0) ? "Male" : "Female");
         person.setIdentity(number.longValue());
         person.setLastName("Last Name Test" + number);
+        person.setEnabled(true);
         return person;
     }
 }

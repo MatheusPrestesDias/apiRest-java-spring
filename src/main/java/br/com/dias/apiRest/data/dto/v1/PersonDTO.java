@@ -2,6 +2,7 @@ package br.com.dias.apiRest.data.dto.v1;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import jakarta.persistence.Column;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ public class PersonDTO extends RepresentationModel<PersonDTO> implements Seriali
     private String lastName;
     private String address;
     private String gender;
+    private Boolean enabled;
 
     public PersonDTO() {
     }
@@ -59,27 +61,39 @@ public class PersonDTO extends RepresentationModel<PersonDTO> implements Seriali
         this.gender = gender;
     }
 
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof PersonDTO)) return false;
+        if (!super.equals(o)) return false;
 
-        PersonDTO person = (PersonDTO) o;
+        PersonDTO personDTO = (PersonDTO) o;
 
-        if (!identity.equals(person.identity)) return false;
-        if (!firstName.equals(person.firstName)) return false;
-        if (!lastName.equals(person.lastName)) return false;
-        if (!address.equals(person.address)) return false;
-        return gender.equals(person.gender);
+        if (!identity.equals(personDTO.identity)) return false;
+        if (!firstName.equals(personDTO.firstName)) return false;
+        if (!lastName.equals(personDTO.lastName)) return false;
+        if (!address.equals(personDTO.address)) return false;
+        if (!gender.equals(personDTO.gender)) return false;
+        return enabled.equals(personDTO.enabled);
     }
 
     @Override
     public int hashCode() {
-        int result = identity.hashCode();
+        int result = super.hashCode();
+        result = 31 * result + identity.hashCode();
         result = 31 * result + firstName.hashCode();
         result = 31 * result + lastName.hashCode();
         result = 31 * result + address.hashCode();
         result = 31 * result + gender.hashCode();
+        result = 31 * result + enabled.hashCode();
         return result;
     }
 }
