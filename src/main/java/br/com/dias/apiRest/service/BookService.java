@@ -1,12 +1,19 @@
 package br.com.dias.apiRest.service;
 
 import br.com.dias.apiRest.controller.BookController;
+import br.com.dias.apiRest.controller.PersonController;
 import br.com.dias.apiRest.data.dto.v1.BookDTO;
+import br.com.dias.apiRest.data.dto.v1.PersonDTO;
 import br.com.dias.apiRest.exceptions.ResourceNotFoundException;
 import br.com.dias.apiRest.model.Book;
 import br.com.dias.apiRest.repository.BookRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +30,9 @@ public class BookService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PagedResourcesAssembler<BookDTO> assembler;
+
     public BookDTO findById(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
@@ -33,16 +43,21 @@ public class BookService {
         return bookDTO;
     }
 
-    public List<BookDTO> findAll() {
-        List<Book> books = bookRepository.findAll();
-        var booksDTO = books.stream()
-                .map(book -> modelMapper.map(book, BookDTO.class))
-                .collect(Collectors.toList());
+    public PagedModel<EntityModel<BookDTO>> findAll(Pageable pageable) {
+        var books = bookRepository.findAll(pageable);
 
-        booksDTO.forEach(book -> book.add(linkTo(methodOn(BookController.class)
+        var booksDTO = books.map(
+                book -> modelMapper.map(book, BookDTO.class));
+
+        booksDTO.map(book -> book.add(linkTo(methodOn(BookController.class)
                 .findById(book.getIdentity())).withSelfRel()));
 
-        return booksDTO;
+        Link link = linkTo(methodOn(BookController.class).findAll(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                "asc")).withSelfRel();
+        
+        return assembler.toModel(booksDTO, link);
     }
 
     public BookDTO create(BookDTO book) {
