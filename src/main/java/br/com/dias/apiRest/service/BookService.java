@@ -1,9 +1,7 @@
 package br.com.dias.apiRest.service;
 
 import br.com.dias.apiRest.controller.BookController;
-import br.com.dias.apiRest.controller.PersonController;
 import br.com.dias.apiRest.data.dto.v1.BookDTO;
-import br.com.dias.apiRest.data.dto.v1.PersonDTO;
 import br.com.dias.apiRest.exceptions.ResourceNotFoundException;
 import br.com.dias.apiRest.model.Book;
 import br.com.dias.apiRest.repository.BookRepository;
@@ -15,8 +13,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
