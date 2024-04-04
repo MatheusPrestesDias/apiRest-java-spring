@@ -12,19 +12,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @ExtendWith(MockitoExtension.class)
 class PersonServiceTest {
 
@@ -36,15 +34,13 @@ class PersonServiceTest {
     @Mock
     private PersonRepository repository;
 
-    @Mock
+    @Spy
     private ModelMapper modelMapper;
 
     @BeforeEach
     void setupMocks() throws Exception {
         input = new MockPerson();
         MockitoAnnotations.openMocks(this);
-
-        modelMapper = new ModelMapper();
 
         modelMapper.createTypeMap(Person.class, PersonDTO.class)
                 .addMapping(Person::getId, PersonDTO::setIdentity);
