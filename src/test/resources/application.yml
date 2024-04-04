@@ -4,7 +4,7 @@ cors:
   originPatterns: http://localhost:3000,http://localhost:8080,https://dias.com.br
 
 file:
-  upload-dir: /Usuário/Área de trabalho/Programação/Api RestFull - Leandro
+  upload-dir: /home/runner/work/apiRest-java-spring/UploadDir
 
 security:
   jwt:
