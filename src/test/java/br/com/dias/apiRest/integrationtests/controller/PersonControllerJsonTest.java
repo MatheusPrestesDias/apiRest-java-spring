@@ -42,7 +42,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     @Order(0)
     public void authorization() throws IOException {
 
-        AccountCredentialsDTO user = new AccountCredentialsDTO("matheus", "admin123");
+        AccountCredentialsDTO user = new AccountCredentialsDTO("matheus", "admin1234");
 
         var accessToken = given().basePath("/auth/authenticate")
                 .port(TestConfigs.SERVER_PORT)

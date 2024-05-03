@@ -38,7 +38,7 @@ class PersonServiceTest {
     private ModelMapper modelMapper;
 
     @BeforeEach
-    void setupMocks() throws Exception {
+    void setupMocks() {
         input = new MockPerson();
         MockitoAnnotations.openMocks(this);
 
