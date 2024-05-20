@@ -1,9 +1,10 @@
 package br.com.dias.apiRest.integrationtests.DTO;
 
-import jakarta.persistence.Column;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serializable;
 
+@XmlRootElement
 public class PersonDTO implements Serializable {
 
     private Long id;

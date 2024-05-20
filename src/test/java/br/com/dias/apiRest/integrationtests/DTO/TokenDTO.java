@@ -1,8 +1,11 @@
 package br.com.dias.apiRest.integrationtests.DTO;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.Date;
 
+@XmlRootElement
 public class TokenDTO implements Serializable {
 
     private String username;

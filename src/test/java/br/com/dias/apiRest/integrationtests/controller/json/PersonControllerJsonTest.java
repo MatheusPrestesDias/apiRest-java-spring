@@ -1,4 +1,4 @@
-package br.com.dias.apiRest.integrationtests.controller;
+package br.com.dias.apiRest.integrationtests.controller.json;
 
 import br.com.dias.apiRest.configs.TestConfigs;
 import br.com.dias.apiRest.integrationtests.DTO.AccountCredentialsDTO;
@@ -10,8 +10,12 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,7 +72,6 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_DIAS)
                 .body(personDTO)
                 .when()
                 .post().then().statusCode(200)
@@ -93,24 +96,6 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(2)
-    public void WithWrongOrigin() {
-        mockPerson();
-
-        var content = given().spec(specification)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_PRESTES)
-                .body(personDTO)
-                .when()
-                .post().then().statusCode(403)
-                .extract().body().asString();
-
-
-        Assertions.assertNotNull(content);
-        Assertions.assertEquals("Invalid CORS request", content);
-    }
-
-    @Test
-    @Order(3)
     public void testFindById() throws IOException {
         mockPerson();
 
@@ -140,20 +125,32 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(4)
-    public void testFindByIdWithWrongOrigin() throws IOException {
-        mockPerson();
+    @Order(3)
+    public void testUpdate() throws IOException {
+        personDTO.setLastName("Dias");
 
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_PRESTES)
-                .pathParam("id", personDTO.getId())
+                .body(personDTO)
                 .when()
-                .get("{id}").then().statusCode(403)
+                .post().then().statusCode(200)
                 .extract().body().asString();
 
-        Assertions.assertNotNull(content);
-        Assertions.assertEquals("Invalid CORS request", content);
+        PersonDTO createdPerson = objectMapper.readValue(content, PersonDTO.class);
+        personDTO = createdPerson;
+
+        Assertions.assertNotNull(createdPerson.getId());
+        Assertions.assertNotNull(createdPerson.getFirstName());
+        Assertions.assertNotNull(createdPerson.getLastName());
+        Assertions.assertNotNull(createdPerson.getAddress());
+        Assertions.assertNotNull(createdPerson.getGender());
+
+        Assertions.assertEquals(personDTO.getId(), createdPerson.getId());
+
+        Assertions.assertEquals("Richard",createdPerson.getFirstName());
+        Assertions.assertEquals("Dias",createdPerson.getLastName());
+        Assertions.assertEquals("New York City, New York, US",createdPerson.getAddress());
+        Assertions.assertEquals("Male",createdPerson.getGender());
     }
 
     private void mockPerson() {

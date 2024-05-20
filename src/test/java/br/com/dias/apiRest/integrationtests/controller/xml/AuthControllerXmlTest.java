@@ -1,13 +1,9 @@
-package br.com.dias.apiRest.integrationtests.controller;
+package br.com.dias.apiRest.integrationtests.controller.xml;
 
 import br.com.dias.apiRest.configs.TestConfigs;
 import br.com.dias.apiRest.integrationtests.DTO.AccountCredentialsDTO;
 import br.com.dias.apiRest.integrationtests.DTO.TokenDTO;
 import br.com.dias.apiRest.integrationtests.testcontainers.AbstractIntegrationTest;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -21,19 +17,19 @@ import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AuthControllerJsonTest extends AbstractIntegrationTest {
+public class AuthControllerXmlTest extends AbstractIntegrationTest {
 
     private static TokenDTO tokenDTO;
 
     @Test
     @Order(0)
-    public void signIn() throws IOException {
+    public void signIn() {
 
         AccountCredentialsDTO user = new AccountCredentialsDTO("matheus", "admin1234");
 
         tokenDTO = given().basePath("/auth/authenticate")
                 .port(TestConfigs.SERVER_PORT)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .contentType(TestConfigs.CONTENT_TYPE_XML)
                 .body(user)
                 .when().
                 post().then().statusCode(200)
@@ -45,13 +41,13 @@ public class AuthControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(1)
-    public void refreshToken() throws IOException {
+    public void refreshToken() {
 
         AccountCredentialsDTO user = new AccountCredentialsDTO("matheus", "admin1234");
 
         var newToken = given().basePath("/auth/refresh")
                 .port(TestConfigs.SERVER_PORT)
-                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .contentType(TestConfigs.CONTENT_TYPE_XML)
                 .pathParam("username", tokenDTO.getUsername())
                 .header(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + tokenDTO.getRefreshToken())
                 .when().
